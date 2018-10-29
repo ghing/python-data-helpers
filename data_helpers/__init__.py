@@ -21,9 +21,11 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
         column used as the numerator.
 
     """
-    # Create a set out of the input column names to more quickly test whether
-    # this is one we're using to calculate a percentage.
-    cols_set = set(cols)
+    # Create a lookup out of the input column names to both test if it's a
+    # column that we need to use to calculate a percentage and to get the
+    # index of the numerator and denominator colums.
+
+    col_to_idx = {col: i for i, col in enumerate(cols)}
     # We'll return a copy of the source DataFrame rather than altering it
     # in-place.
     df_out = df.copy()
@@ -31,13 +33,12 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
     # A list of output column names. We use this so we can put the percentage
     # columns next to the column that was used as the numerator.
     cols_out = []
-    i = 0
 
     for col in df.columns:
         # Preserve column ordering for the DataFrame we'll return.
         cols_out.append(col)
 
-        if col not in cols_set:
+        if col not in col_to_idx:
             # We're not calculating a percentage from this column. Just pass
             # it through.
             continue
@@ -50,7 +51,7 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
         else:
             # Assume total_col is an iterable. Get the denominator
             # corresponding to the current numerator.
-            divisor_col = total_col[i]
+            divisor_col = total_col[col_to_idx[col]]
 
         # Calculate the percentage.
         pct_col = '{}{}'.format(col, suffix)
@@ -59,10 +60,6 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
         # Add the newly calculated column name to the list of output columns,
         # preserving order.
         cols_out.append(pct_col)
-
-        # Increment the counter to index columns we're using to calculate
-        # percentages.
-        i += 1
 
     # Reorder the columns so the calculated perentages.
     return df_out[cols_out]
