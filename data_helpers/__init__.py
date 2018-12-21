@@ -87,3 +87,13 @@ def normalize_column_name(col_name, lookup=None, prefix=''):
         slug = slugify(col_name)
 
     return '{}{}'.format(prefix, slug)
+
+
+def parse_boolean(val):
+    """Returns boolean value corresponding to string, e.g. 'Y' or 'N'"""
+    if val in ('Y', "Yes", 1):
+        return True
+    elif val in ('N', "No", 0):
+        return False
+
+    return None 
