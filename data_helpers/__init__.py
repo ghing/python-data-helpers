@@ -67,7 +67,7 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
 
 def slugify(s, sep='_'):
     """Removes whitespace and punctuation from a string."""
-    return re.sub(r'[\s\-]+', '_', s.lower())
+    return re.sub(r'[\s\-]+', sep, s.lower())
 
 
 def normalize_column_name(col_name, lookup=None, prefix=''):
