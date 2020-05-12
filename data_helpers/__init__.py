@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 
-def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
+def add_pct_cols(df, cols, total_col="total", suffix="_pct"):
     """Calculates percentage columns from existing columns.
 
     Args:
@@ -59,7 +59,7 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
             divisor_col = total_col[col_to_idx[col]]
 
         # Calculate the percentage.
-        pct_col = '{}{}'.format(col, suffix)
+        pct_col = "{}{}".format(col, suffix)
         df_out[pct_col] = df[col] / df[divisor_col]
 
         # Add the newly calculated column name to the list of output columns,
@@ -70,12 +70,12 @@ def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
     return df_out[cols_out]
 
 
-def slugify(s, sep='_'):
+def slugify(s, sep="_"):
     """Removes whitespace and punctuation from a string."""
-    return re.sub(r'[\s\-]+', sep, s.lower())
+    return re.sub(r"[\s\-]+", sep, s.lower())
 
 
-def normalize_column_name(col_name, lookup=None, prefix=''):
+def normalize_column_name(col_name, lookup=None, prefix=""):
     """
     Normalize column name.
 
@@ -91,16 +91,18 @@ def normalize_column_name(col_name, lookup=None, prefix=''):
     except KeyError:
         slug = slugify(col_name)
 
-    return '{}{}'.format(prefix, slug)
+    return "{}{}".format(prefix, slug)
+
 
 def parse_boolean(val):
     """Returns boolean value corresponding to string, e.g. 'Y' or 'N'"""
-    if val in ('Y', "Yes", 1):
+    if val in ("Y", "Yes", 1):
         return True
-    elif val in ('N', "No", 0):
+    elif val in ("N", "No", 0):
         return False
 
     return None
+
 
 def copy_and_call(data, method, *args, **kwargs):
     """
@@ -116,6 +118,7 @@ def copy_and_call(data, method, *args, **kwargs):
 
     return data_out
 
+
 def insert_column(data, loc, column, value, allow_duplicates=False):
     """
     Returns copy of DataFrame with column inserted.
@@ -123,14 +126,8 @@ def insert_column(data, loc, column, value, allow_duplicates=False):
     This works like `DataFrame.insert()` but returns a copy instead.
 
     """
-    return copy_and_call(
-        data,
-        "insert",
-        loc,
-        column,
-        value,
-        allow_duplicates
-    )
+    return copy_and_call(data, "insert", loc, column, value, allow_duplicates)
+
 
 def insert_column_constant(data, loc, column, value, allow_duplicates=False):
     """
@@ -140,6 +137,7 @@ def insert_column_constant(data, loc, column, value, allow_duplicates=False):
     value_series = np.repeat(value, data.shape[0])
     return insert_column(data, loc, column, value_series, allow_duplicates)
 
+
 def if_else_getter(if_var, else_var):
     """
     Returns a function that returns one variable if set, otherwise the other.
@@ -147,11 +145,8 @@ def if_else_getter(if_var, else_var):
     This is intended to be passed as an argument to `DataFrame.assign`.
 
     """
+
     def getter(data):
-        return np.where(
-            ~pd.isna(data[if_var]),
-            data[if_var],
-            data[else_var]
-        )
+        return np.where(~pd.isna(data[if_var]), data[if_var], data[else_var])
 
     return getter
