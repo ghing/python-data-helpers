@@ -1,4 +1,9 @@
+"""Useful functions for working with data."""
+
 import re
+
+import numpy as np
+import pandas as pd
 
 
 def add_pct_cols(df, cols, total_col='total', suffix='_pct'):
@@ -88,7 +93,6 @@ def normalize_column_name(col_name, lookup=None, prefix=''):
 
     return '{}{}'.format(prefix, slug)
 
-
 def parse_boolean(val):
     """Returns boolean value corresponding to string, e.g. 'Y' or 'N'"""
     if val in ('Y', "Yes", 1):
@@ -96,4 +100,58 @@ def parse_boolean(val):
     elif val in ('N', "No", 0):
         return False
 
-    return None 
+    return None
+
+def copy_and_call(data, method, *args, **kwargs):
+    """
+    Copy a DataFrame  and call a method on it.
+
+    This is useful for calling methods like `DataFrame.insert()` that don't
+    return a copy.
+
+    """
+    data_out = data.copy()
+
+    getattr(data_out, method)(*args, **kwargs)
+
+    return data_out
+
+def insert_column(data, loc, column, value, allow_duplicates=False):
+    """
+    Returns copy of DataFrame with column inserted.
+
+    This works like `DataFrame.insert()` but returns a copy instead.
+
+    """
+    return copy_and_call(
+        data,
+        "insert",
+        loc,
+        column,
+        value,
+        allow_duplicates
+    )
+
+def insert_column_constant(data, loc, column, value, allow_duplicates=False):
+    """
+    Returns copy of DataFrame with column inserted and initialized to value.
+
+    """
+    value_series = np.repeat(value, data.shape[0])
+    return insert_column(data, loc, column, value_series, allow_duplicates)
+
+def if_else_getter(if_var, else_var):
+    """
+    Returns a function that returns one variable if set, otherwise the other.
+
+    This is intended to be passed as an argument to `DataFrame.assign`.
+
+    """
+    def getter(data):
+        return np.where(
+            ~pd.isna(data[if_var]),
+            data[if_var],
+            data[else_var]
+        )
+
+    return getter
