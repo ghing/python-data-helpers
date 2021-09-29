@@ -30,5 +30,7 @@ setup(
     packages=[
         'data_helpers',
     ],
-    install_requires=[],
+    install_requires=[
+        'click',
+    ],
 )
