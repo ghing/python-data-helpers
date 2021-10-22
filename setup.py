@@ -32,5 +32,7 @@ setup(
     ],
     install_requires=[
         'click',
+        'requests',
+        'tqdm',
     ],
 )
